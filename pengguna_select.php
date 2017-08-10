@@ -22,7 +22,7 @@ if (isset($_POST['id_user'])) {
     } else {
         // user is not found with the credentials
         $response["error"] = TRUE;
-        $response["error_msg"] = "Login credentials are wrong. Please try again!";
+        $response["error_msg"] = "Tidak ada data diri";
         echo json_encode($response);
     }
 } else {

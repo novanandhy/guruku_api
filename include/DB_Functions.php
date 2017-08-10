@@ -22,7 +22,7 @@ class DB_Functions {
         
     }
 
-    public $domain = 'http://192.168.1.105';
+    public $domain = 'http://192.168.1.5';
 
     /**
      * Storing new user
@@ -219,6 +219,7 @@ class DB_Functions {
       // convert from degrees to radians
       $earthRadius = 6371000;
 
+     // convert from degrees to radians
       $latFrom = deg2rad($latitudeFrom);
       $lonFrom = deg2rad($longitudeFrom);
       $latTo = deg2rad($latitudeTo);
@@ -230,7 +231,7 @@ class DB_Functions {
       $b = sin($latFrom) * sin($latTo) + cos($latFrom) * cos($latTo) * cos($lonDelta);
 
       $angle = atan2(sqrt($a), $b);
-      return $angle * $earthRadius;
+      return number_format((($angle * $earthRadius)/1000), 2, '.', '');
     }
 
     /**
@@ -364,10 +365,9 @@ class DB_Functions {
 
                 //mendapatkan jarak antara 2 titik koordinat
                 $dist = $this->vincentyGreatCircleDistance($lat, $row['lat'], $lng, $row['lng']);
-                $dist = $dist/1000;
-                $dist = number_format((float)$dist, 2, '.', '');
 
-                $temp = array(
+                if ($dist < 20) {
+                    $temp = array(
                         "dist" => $dist,
                         "id_guru" => $row['id_guru'],
                         "nama" => $row['nama'],
@@ -377,7 +377,8 @@ class DB_Functions {
                         "jurusan" => $row['jurusan'],
                         "alamat" => $row['alamat'],
                         "pengalaman" => $row['pengalaman']);
-                array_push($user, $temp);
+                     array_push($user, $temp);
+                }
             }
             return $user;
         }else{
@@ -463,26 +464,23 @@ class DB_Functions {
 
                 //mendapatkan jarak antara 2 titik koordinat
                 $dist = $this->vincentyGreatCircleDistance($lat, $row['lat'], $lng, $row['lng']);
-                $dist = number_format((float)$dist, 2, '.', '');
-                // print_r($dist);
-                //cek jika jarak kurang dari 20km
-                if ($dist < 20000) {
+
+                if ($dist < 20) {
                     $temp = array(
-                    "id" => $row["id"],
-                    "id_user" => $row["id_user"],
-                    "subjek" => $row["subjek"],
-                    "description" => $row["description"],
-                    "nama" => $row["nama"],
-                    "foto" => $row["foto"],
-                    "alamat" => $row["alamat"],
-                    "no_telp" => $row["no_telp"],
-                    "email" => $row["email"],
-                    "lat" => $row["lat"],
-                    "lng" => $row["lng"],
-                    "dist" => $dist);
-                array_push($user, $temp);
+                        "id" => $row["id"],
+                        "id_user" => $row["id_user"],
+                        "subjek" => $row["subjek"],
+                        "description" => $row["description"],
+                        "nama" => $row["nama"],
+                        "foto" => $row["foto"],
+                        "alamat" => $row["alamat"],
+                        "no_telp" => $row["no_telp"],
+                        "email" => $row["email"],
+                        "lat" => $row["lat"],
+                        "lng" => $row["lng"],
+                        "dist" => $dist);
+                    array_push($user, $temp);
                 }
-                else return $user;
             }
             return $user;
         }else{
@@ -920,7 +918,7 @@ class DB_Functions {
 
 
         $sql = "SELECT 
-                guru.id_guru, guru.nama, guru.foto, guru.pengalaman, guru.lat, guru.pendidikan, guru.lng,
+                guru.id_guru, guru.nama, guru.foto, guru.pengalaman, guru.lat, guru.pendidikan, guru.lng, guru.alamat, guru.kampus, guru.jurusan,guru.no_telp
                 skill_guru.biaya, skill_guru.id, 
                 rating_guru.rating
                 FROM guru
@@ -935,14 +933,16 @@ class DB_Functions {
         if ($result->num_rows > 0) {
             while($row = $result->fetch_assoc()) {
                  $dist = $this->vincentyGreatCircleDistance($latitude, $row['lat'], $longitude, $row['lng']);
-                 $dist = $dist /1000;
-                 $jarak = number_format((float)$dist, 2, '.', '');
                 $fuzzy = $this->fuzzyFunction($harga_min,$harga_mid,$harga_max,$pengalaman_min,$pengalaman_mid,$pengalaman_max,$jarak_min,$jarak_mid,$jarak_max,$param_harga,$param_pengalaman,$param_jarak,$dist,$row['biaya'],$row['pengalaman']);
                  if ($fuzzy > 0) {
                      $temp = array(
                         "id_guru" => $row['id_guru'],
                         "nama" => $row['nama'],
                         "foto" => $row['foto'],
+                        "alamat" => $row['alamat'],
+                        "kampus" => $row['kampus'],
+                        "jurusan" => $row['jurusan'],
+                        "no_telp" => $row['no_telp'],
                         "pengalaman" => $row['pengalaman'],
                         "pendidikan" => $row['pendidikan'],
                         "lat" => $row['lat'],

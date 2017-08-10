@@ -23,7 +23,7 @@ if (isset($_POST['lat']) && isset($_POST['long'])) {
     } else {
         // user is not found with the credentials
         $response["error"] = TRUE;
-        $response["error_msg"] = "Empty field for guru";
+        $response["error_msg"] = "Mohon isi data diri anda dengan lengkap";
         echo json_encode($response);
     }
 } else {

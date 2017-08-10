@@ -21,7 +21,7 @@ if (isset($_POST['id_guru'])) {
     } else {
         // user failed to store
         $response["error"] = TRUE;
-        $response["error_msg"] = "empty field for skill";
+        $response["error_msg"] = "Tidak ada daftar keahlian";
         echo json_encode($response);
     }
 } else {

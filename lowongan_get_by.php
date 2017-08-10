@@ -21,7 +21,7 @@ if (isset($_POST['id_user'])) {
     } else {
         // user failed to store
         $response["error"] = FALSE;
-        $response["error_msg"] = "No lowongan found!";
+        $response["error_msg"] = "Lowongan Kosong";
         $response["user"] = array();
         echo json_encode($response);
     }

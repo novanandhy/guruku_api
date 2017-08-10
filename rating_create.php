@@ -18,7 +18,7 @@ if (isset($_POST['id_user']) && isset($_POST['id_guru']) && isset($_POST['rating
     if ($db->isUserAlreadyRate($id_user,$id_guru)) {
         // user already existed
         $response["error"] = TRUE;
-        $response["error_msg"] = "User already rated";
+        $response["error_msg"] = "Anda telah menilai guru ini";
         echo json_encode($response);
     } else {
         // create a new user
@@ -36,7 +36,7 @@ if (isset($_POST['id_user']) && isset($_POST['id_guru']) && isset($_POST['rating
             $state = $db->rating_guru_update($id_guru,$average);
             if ($state) {
                 $response["error"] = FALSE;
-                $response["error_msg"] = "completed creating rating";
+                $response["error_msg"] = "Terima kasih telah menilai";
                 echo json_encode($response);
             }else{
                 $response["error"] = TRUE;

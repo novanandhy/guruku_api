@@ -16,7 +16,7 @@ if (isset($_POST['id_user']) && isset($_POST['id_guru'])) {
     if ($db->isUserAlreadyBook($id_user,$id_guru)) {
         // user already existed
         $response["error"] = TRUE;
-        $response["error_msg"] = "User already book";
+        $response["error_msg"] = "anda telah memesan guru ini";
         echo json_encode($response);
     } else {
         // create a new user
