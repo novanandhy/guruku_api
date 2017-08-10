@@ -20,8 +20,9 @@ if (isset($_POST['id_user'])) {
         echo json_encode($response);
     } else {
         // user failed to store
-        $response["error"] = TRUE;
-        $response["error_msg"] = "Unknown error occurred in registration!";
+        $response["error"] = FALSE;
+        $response["error_msg"] = "No lowongan found!";
+        $response["user"] = array();
         echo json_encode($response);
     }
 } else {

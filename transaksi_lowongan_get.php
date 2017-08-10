@@ -21,8 +21,9 @@ if (isset($_POST['id_guru'])) {
         echo json_encode($response, JSON_UNESCAPED_SLASHES);
     } else {
         // user is not found with the credentials
-        $response["error"] = TRUE;
-        $response["error_msg"] = "Login credentials are wrong. Please try again!";
+        $response["error"] = FALSE;
+        $response["error_msg"] = "No transaksi lowongan found!";
+        $response["user"] = array();
         echo json_encode($response);
     }
 } else {

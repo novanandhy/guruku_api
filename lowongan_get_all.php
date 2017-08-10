@@ -11,6 +11,7 @@ if (isset($_POST['latitude']) && isset($_POST['longitude'])) {
 	$longitude = $_POST['longitude'];
 
 	$user = $db->lowongan_get_all($latitude,$longitude);
+	// var_dump($user);
 	if ($user) {
 	    // user stored successfully
 	    $response["error"] = FALSE;

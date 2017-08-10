@@ -6,14 +6,14 @@ $db = new DB_Functions();
 // json response array
 $response = array("error" => FALSE);
 
-if (isset($_POST['id_user']) && isset($_POST['previllage'])) {
+if (isset($_POST['lat']) && isset($_POST['long'])) {
 
     // receiving the GET params
-    $id_user = $_POST['id_user'];
-    $previllage = $_POST['previllage'];
+    $lat = $_POST['lat'];
+    $lng = $_POST['long'];
 
     // get the user by uid_guru and password
-    $user = $db->booking_get($id_user, $previllage);
+    $user = $db->guru_get_all($lat,$lng);
 
     if ($user != false) {
         // use is found
@@ -22,15 +22,14 @@ if (isset($_POST['id_user']) && isset($_POST['previllage'])) {
         echo json_encode($response, JSON_UNESCAPED_SLASHES);
     } else {
         // user is not found with the credentials
-        $response["error"] = FALSE;
-        $response["error_msg"] = "No pesan";
-        $response["user"] = array();
+        $response["error"] = TRUE;
+        $response["error_msg"] = "Empty field for guru";
         echo json_encode($response);
     }
 } else {
     // required GET params is missing
     $response["error"] = TRUE;
-    $response["error_msg"] = "Required parameters uid_guru is missing!";
+    $response["error_msg"] = "Required parameters id_guru is missing!";
     echo json_encode($response);
 }
 ?>

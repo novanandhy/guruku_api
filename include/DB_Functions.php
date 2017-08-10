@@ -22,7 +22,7 @@ class DB_Functions {
         
     }
 
-    public $domain = 'http://192.168.43.166';
+    public $domain = 'http://192.168.1.105';
 
     /**
      * Storing new user
@@ -62,7 +62,6 @@ class DB_Functions {
             return false;
         }
     }
-
 
     /**
      * Get user by username and password
@@ -213,12 +212,12 @@ class DB_Functions {
             $distance += $road->distance->value;
         }
 
-        return $distance;
+        return $distance/1000;
     }
 
     public static function vincentyGreatCircleDistance($latitudeFrom, $latitudeTo, $longitudeFrom, $longitudeTo){
       // convert from degrees to radians
-      $earthRadius = 6371;
+      $earthRadius = 6371000;
 
       $latFrom = deg2rad($latitudeFrom);
       $lonFrom = deg2rad($longitudeFrom);
@@ -336,7 +335,48 @@ class DB_Functions {
                     "usia" => $row["usia"],
                     "ipk" => $row["ipk"],
                     "kampus" => $row["kampus"],
-                    "jurusan" => $row["jurusan"]);
+                    "jurusan" => $row["jurusan"],
+                    "skill" => $this->skill_get_by($id_guru),
+                    "jadwal" => $this->jadwal_get_by($id_guru),
+                    "rating" => $this->rating_get_by($id_guru),
+                    "rating1" => $this->rating_get($id_guru),
+                    "rating2" => $this->rating_get_review($id_guru));
+                array_push($user, $temp);
+            }
+            // array_push($user, $skill);
+            return $user[0];
+        }else{
+            return NULL;
+        }
+    }
+
+    public function guru_get_all($lat,$lng) {
+
+        $user = array();
+
+        $sql = "SELECT nama,foto,id_guru,pengalaman,lat,lng,no_telp,kampus,jurusan,alamat FROM guru ORDER BY pengalaman DESC";
+        // var_dump($this->conn)
+        $result = $this->conn->query($sql);
+
+        //check row based on uid_user and month
+        if ($result->num_rows > 0) {
+            while($row = $result->fetch_assoc()) {
+
+                //mendapatkan jarak antara 2 titik koordinat
+                $dist = $this->vincentyGreatCircleDistance($lat, $row['lat'], $lng, $row['lng']);
+                $dist = $dist/1000;
+                $dist = number_format((float)$dist, 2, '.', '');
+
+                $temp = array(
+                        "dist" => $dist,
+                        "id_guru" => $row['id_guru'],
+                        "nama" => $row['nama'],
+                        "foto" => $row['foto'],
+                        "no_telp" => $row['no_telp'],
+                        "kampus" => $row['kampus'],
+                        "jurusan" => $row['jurusan'],
+                        "alamat" => $row['alamat'],
+                        "pengalaman" => $row['pengalaman']);
                 array_push($user, $temp);
             }
             return $user;
@@ -413,17 +453,20 @@ class DB_Functions {
         FROM lowongan 
         INNER JOIN pengguna ON lowongan.id_user = pengguna.id_user 
         ORDER BY id DESC";
-        
+        // var_dump($this->conn)
         $result = $this->conn->query($sql);
 
         //check row based on uid_user and month
         if ($result->num_rows > 0) {
-            while($row = $result->fetch_assoc()) {
-                //mendapatkan jarak antara 2 titik koordinat
-                $dist = $this->GetDrivingDistance($lat, $row['lat'], $lng, $row['lng']);
 
+            while($row = $result->fetch_assoc()) {
+
+                //mendapatkan jarak antara 2 titik koordinat
+                $dist = $this->vincentyGreatCircleDistance($lat, $row['lat'], $lng, $row['lng']);
+                $dist = number_format((float)$dist, 2, '.', '');
+                // print_r($dist);
                 //cek jika jarak kurang dari 20km
-                if ($dist < 200000) {
+                if ($dist < 20000) {
                     $temp = array(
                     "id" => $row["id"],
                     "id_user" => $row["id_user"],
@@ -439,6 +482,7 @@ class DB_Functions {
                     "dist" => $dist);
                 array_push($user, $temp);
                 }
+                else return $user;
             }
             return $user;
         }else{
@@ -514,7 +558,7 @@ class DB_Functions {
             }
             return $user;
         }else{
-            return NULL;
+            return array();
         }
     }
 
@@ -555,7 +599,7 @@ class DB_Functions {
             }
             return $user;
         }else{
-            return NULL;
+            return array();
         }
     }
 
@@ -644,7 +688,7 @@ class DB_Functions {
             }
             return $user;
         }else{
-            return NULL;
+            return array();
         }
     }
 
@@ -677,7 +721,7 @@ class DB_Functions {
             }
             return $user;
         }else{
-            return NULL;
+            return array();
         }
     }
 
@@ -764,7 +808,7 @@ class DB_Functions {
             pesan.id_user, 
             pesan.id_guru, 
             pesan.status, 
-            pesan.keterangan, 
+            -- pesan.keterangan, 
             pengguna.nama,
             pengguna.foto,
             pengguna.alamat,
@@ -779,8 +823,7 @@ class DB_Functions {
             $sql = "SELECT * FROM pesan WHERE id_user = '$id_user'";
         }
         
-        
-        
+    
         $result = $this->conn->query($sql);
 
         //check row based on uid_user and month
@@ -877,7 +920,7 @@ class DB_Functions {
 
 
         $sql = "SELECT 
-                guru.id_guru, guru.nama, guru.foto, guru.pengalaman, guru.lat, guru.lng, 
+                guru.id_guru, guru.nama, guru.foto, guru.pengalaman, guru.lat, guru.pendidikan, guru.lng,
                 skill_guru.biaya, skill_guru.id, 
                 rating_guru.rating
                 FROM guru
@@ -892,6 +935,7 @@ class DB_Functions {
         if ($result->num_rows > 0) {
             while($row = $result->fetch_assoc()) {
                  $dist = $this->vincentyGreatCircleDistance($latitude, $row['lat'], $longitude, $row['lng']);
+                 $dist = $dist /1000;
                  $jarak = number_format((float)$dist, 2, '.', '');
                 $fuzzy = $this->fuzzyFunction($harga_min,$harga_mid,$harga_max,$pengalaman_min,$pengalaman_mid,$pengalaman_max,$jarak_min,$jarak_mid,$jarak_max,$param_harga,$param_pengalaman,$param_jarak,$dist,$row['biaya'],$row['pengalaman']);
                  if ($fuzzy > 0) {
@@ -900,6 +944,7 @@ class DB_Functions {
                         "nama" => $row['nama'],
                         "foto" => $row['foto'],
                         "pengalaman" => $row['pengalaman'],
+                        "pendidikan" => $row['pendidikan'],
                         "lat" => $row['lat'],
                         "lng" => $row['lng'],
                         "biaya" => $row['biaya'],

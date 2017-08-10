@@ -13,17 +13,18 @@ if (isset($_POST['id_guru'])) {
 
     // create a new lowongan
     $user = $db->rating_get_review($id_guru);
-    if ($user) {
+   
+    // if ($user) {
         // user stored successfully
         $response["error"] = FALSE;
         $response["user"] = $user;
         echo json_encode($response);
-    } else {
-        // user failed to store
-        $response["error"] = TRUE;
-        $response["error_msg"] = "empty field for rating and review";
-        echo json_encode($response);
-    }
+    // } else {
+    //     // user failed to store
+    //     $response["error"] = TRUE;
+    //     $response["error_msg"] = "empty field for rating and review";
+    //     echo json_encode($response);
+    // }
 } else {
     $response["error"] = TRUE;
     $response["error_msg"] = "Required parameters is missing!";
