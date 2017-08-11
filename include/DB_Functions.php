@@ -806,7 +806,6 @@ class DB_Functions {
             pesan.id_user, 
             pesan.id_guru, 
             pesan.status, 
-            -- pesan.keterangan, 
             pengguna.nama,
             pengguna.foto,
             pengguna.alamat,
@@ -818,7 +817,14 @@ class DB_Functions {
             INNER JOIN pengguna ON pesan.id_user = pengguna.id_user
             WHERE id_guru = '$id_user'";
         }else{
-            $sql = "SELECT * FROM pesan WHERE id_user = '$id_user'";
+            $sql = "SELECT 
+            pesan.id, pesan.id_user, pesan.id_guru, pesan.status, 
+            guru.id_guru, guru.foto, guru.nama, guru.alamat, guru.no_telp, guru.kampus, guru.jurusan, 
+            rating_guru.rating 
+            FROM pesan 
+            INNER JOIN guru ON guru.id_guru = pesan.id_guru 
+            INNER JOIN rating_guru ON pesan.id_guru = rating_guru.id_guru 
+            WHERE id_user = '$id_user'";
         }
         
     
@@ -918,14 +924,17 @@ class DB_Functions {
 
 
         $sql = "SELECT 
-                guru.id_guru, guru.nama, guru.foto, guru.pengalaman, guru.lat, guru.pendidikan, guru.lng, guru.alamat, guru.kampus, guru.jurusan,guru.no_telp
+                guru.id_guru, guru.nama, guru.foto, guru.pengalaman, guru.lat, guru.pendidikan, guru.lng, guru.alamat, guru.kampus, guru.jurusan,guru.no_telp,
                 skill_guru.biaya, skill_guru.id, 
                 rating_guru.rating
                 FROM guru
                 INNER JOIN jadwal ON jadwal.id_guru = guru.id_guru
                 INNER JOIN skill_guru ON skill_guru.id_guru = guru.id_guru
                 INNER JOIN rating_guru ON rating_guru.id_guru = guru.id_guru
-                WHERE guru.kelamin = '$kelamin' AND jadwal.hari = '$hari' AND skill_guru.jenjang = '$jenjang' AND skill_guru.mapel = '$mapel'";
+                WHERE guru.kelamin = '$kelamin' 
+                AND jadwal.hari = '$hari' 
+                AND skill_guru.jenjang = '$jenjang' 
+                AND skill_guru.mapel = '$mapel'";
 
         $result = $this->conn->query($sql);
 
@@ -935,7 +944,7 @@ class DB_Functions {
                  $dist = $this->vincentyGreatCircleDistance($latitude, $row['lat'], $longitude, $row['lng']);
                 $fuzzy = $this->fuzzyFunction($harga_min,$harga_mid,$harga_max,$pengalaman_min,$pengalaman_mid,$pengalaman_max,$jarak_min,$jarak_mid,$jarak_max,$param_harga,$param_pengalaman,$param_jarak,$dist,$row['biaya'],$row['pengalaman']);
                  if ($fuzzy > 0) {
-                     $temp = array(
+                    $temp = array(
                         "id_guru" => $row['id_guru'],
                         "nama" => $row['nama'],
                         "foto" => $row['foto'],
@@ -950,8 +959,8 @@ class DB_Functions {
                         "biaya" => $row['biaya'],
                         "id_skill" => $row['id'],
                         "rating" => $row['rating'],
-                        "jarak" => $jarak);
-                    array_push($user, $temp);
+                        "jarak" => $dist);
+                    array_push($user, $temp);  
                  }
             }
             return $user;
