@@ -819,7 +819,7 @@ class DB_Functions {
         }else{
             $sql = "SELECT 
             pesan.id, pesan.id_user, pesan.id_guru, pesan.status, 
-            guru.id_guru, guru.foto, guru.nama, guru.alamat, guru.no_telp, guru.kampus, guru.jurusan, 
+            guru.id_guru, guru.foto, guru.nama, guru.alamat, guru.no_telp, guru.kampus, guru.jurusan, guru.pendidikan,
             rating_guru.rating 
             FROM pesan 
             INNER JOIN guru ON guru.id_guru = pesan.id_guru 
